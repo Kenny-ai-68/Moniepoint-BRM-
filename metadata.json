@@ -1,0 +1,6 @@
+{
+  "name": "KENNY OLU DIGITAL - Moniepoint Business Solutions",
+  "description": "Official Business Relationship Manager for Moniepoint POS Terminals, Business Loans (₦500k - Millions), Moniebook & Business Savings. Under 24h Delivery.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
