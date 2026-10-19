@@ -7,6 +7,7 @@
 -- ==============================================================================
 
 -- 1. Enable UUID Extension
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ==============================================================================
@@ -14,7 +15,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Stores general business information, headlines, pricing, and media URLs.
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.site_content (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     business_name VARCHAR(255) NOT NULL DEFAULT 'KENNY OLU DIGITAL',
     business_type VARCHAR(255) NOT NULL DEFAULT 'Business Relationship Manager',
     brand_tagline TEXT DEFAULT 'Official Moniepoint Business Relationship & Terminal Services',
@@ -34,16 +35,20 @@ CREATE TABLE IF NOT EXISTS public.site_content (
     hero_subheadline TEXT NOT NULL DEFAULT 'Get your Moniepoint POS terminal delivered within 24 hours for only ₦25,000 across Ogun and Lagos State. Unlock business loans from ₦500k to millions, automate daily bookkeeping with Moniebook, and earn high-yield savings.',
     hero_description TEXT DEFAULT 'Partner with Kenny Olu Digital (located at 3 Matogun road Adiyan gasline Agbado) for reliable payment processing, uninterrupted dual-network 4G connection, zero settlement delays, and dedicated 1-on-1 account management for your business.',
     hero_image_url TEXT DEFAULT 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1200&q=80',
-    promo_video_url TEXT DEFAULT 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    promo_video_url TEXT DEFAULT 'https://www.youtube.com/watch?v=LWMXALG3H5I',
     pos_price VARCHAR(50) DEFAULT '₦25,000',
     delivery_timeframe VARCHAR(100) DEFAULT 'Under 24 hours',
     loan_amount_range VARCHAR(100) DEFAULT '₦500k - Millions',
     
+    -- Dedicated Loan and Savings Image Spaces
+    loan_image_url TEXT DEFAULT '',
+    savings_image_url TEXT DEFAULT '',
+
     -- About Products 6th Slot Media Showcase (Image or Video)
-    audience_media_url TEXT DEFAULT 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1000&q=80',
-    audience_media_type VARCHAR(20) DEFAULT 'image', -- 'image' or 'video'
-    audience_media_title VARCHAR(255) DEFAULT 'Moniepoint Smart POS in Action',
-    audience_media_caption TEXT DEFAULT 'Official Terminal Deployment & Merchant Setup',
+    audience_media_url TEXT DEFAULT '',
+    audience_media_type VARCHAR(20) DEFAULT 'video', -- 'image' or 'video'
+    audience_media_title VARCHAR(255) DEFAULT 'Official Moniepoint POS Video',
+    audience_media_caption TEXT DEFAULT 'Watch official terminal features & merchant demonstration',
 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -75,6 +80,7 @@ CREATE TABLE IF NOT EXISTS public.products (
     highlight VARCHAR(255),
     icon_name VARCHAR(100) DEFAULT 'CreditCard',
     badge VARCHAR(100),
+    image_url TEXT DEFAULT '',
     features JSONB NOT NULL DEFAULT '[]'::jsonb,
     cta_text VARCHAR(100) NOT NULL DEFAULT 'Order Now',
     cta_action VARCHAR(50) NOT NULL DEFAULT 'pos_modal',
@@ -143,7 +149,7 @@ CREATE TABLE IF NOT EXISTS public.faqs (
 -- TABLE: leads (Customer Orders, Loan Requests & Inquiries)
 -- ==============================================================================
 CREATE TABLE IF NOT EXISTS public.leads (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     full_name VARCHAR(255) NOT NULL,
     phone VARCHAR(50) NOT NULL,
     email VARCHAR(255),
@@ -175,26 +181,57 @@ ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 
 -- 1. Public Read Policies (Allow website visitors to read content)
+DROP POLICY IF EXISTS "Allow public read site_content" ON public.site_content;
 CREATE POLICY "Allow public read site_content" ON public.site_content FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read cta_buttons" ON public.cta_buttons;
 CREATE POLICY "Allow public read cta_buttons" ON public.cta_buttons FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read products" ON public.products;
 CREATE POLICY "Allow public read products" ON public.products FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read benefits" ON public.benefits;
 CREATE POLICY "Allow public read benefits" ON public.benefits FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read outcomes" ON public.outcomes;
 CREATE POLICY "Allow public read outcomes" ON public.outcomes FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read testimonials" ON public.testimonials;
 CREATE POLICY "Allow public read testimonials" ON public.testimonials FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read faqs" ON public.faqs;
 CREATE POLICY "Allow public read faqs" ON public.faqs FOR SELECT USING (true);
 
--- 2. Public Insert Policy for Leads (Allows visitors to submit orders/applications)
-CREATE POLICY "Allow public insert leads" ON public.leads FOR INSERT WITH CHECK (true);
+-- 2. Public / Anonymous Insert Policy for Leads
+-- Allows website visitors to submit orders/applications securely.
+-- IMPORTANT: Visitors are NOT granted SELECT permissions, ensuring no visitor can read or scrape other customers' personal data.
+DROP POLICY IF EXISTS "Allow public insert leads" ON public.leads;
+CREATE POLICY "Allow public insert leads" ON public.leads FOR INSERT TO anon, authenticated WITH CHECK (true);
 
--- 3. Authenticated / Service Role Policies (Admin management)
-CREATE POLICY "Allow authenticated manage site_content" ON public.site_content FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow authenticated manage cta_buttons" ON public.cta_buttons FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow authenticated manage products" ON public.products FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow authenticated manage benefits" ON public.benefits FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow authenticated manage outcomes" ON public.outcomes FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow authenticated manage testimonials" ON public.testimonials FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow authenticated manage faqs" ON public.faqs FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Allow authenticated manage leads" ON public.leads FOR ALL USING (auth.role() = 'authenticated');
+-- 3. Authenticated Admin Policies (Full Management by Site Owner)
+DROP POLICY IF EXISTS "Allow authenticated manage site_content" ON public.site_content;
+CREATE POLICY "Allow authenticated manage site_content" ON public.site_content FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated manage cta_buttons" ON public.cta_buttons;
+CREATE POLICY "Allow authenticated manage cta_buttons" ON public.cta_buttons FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated manage products" ON public.products;
+CREATE POLICY "Allow authenticated manage products" ON public.products FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated manage benefits" ON public.benefits;
+CREATE POLICY "Allow authenticated manage benefits" ON public.benefits FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated manage outcomes" ON public.outcomes;
+CREATE POLICY "Allow authenticated manage outcomes" ON public.outcomes FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated manage testimonials" ON public.testimonials;
+CREATE POLICY "Allow authenticated manage testimonials" ON public.testimonials FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated manage faqs" ON public.faqs;
+CREATE POLICY "Allow authenticated manage faqs" ON public.faqs FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow authenticated manage leads" ON public.leads;
+CREATE POLICY "Allow authenticated manage leads" ON public.leads FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- ==============================================================================
 -- SEED INITIAL DATA (Matches Kenny Olu Digital Production Content)

@@ -65,9 +65,11 @@ export const isSupabaseConfigured = (): boolean => {
 export async function submitLeadToSupabase(lead: {
   fullName: string;
   phone: string;
+  email?: string;
   businessName: string;
   deliveryState?: string;
   businessAddress?: string;
+  residentialAddress?: string;
   serviceType: string;
   loanAmountRequested?: string;
   bvnProvided?: boolean;
@@ -80,13 +82,15 @@ export async function submitLeadToSupabase(lead: {
   }
 
   try {
-    const { data, error } = await client.from('leads').insert([
+    const { error } = await client.from('leads').insert([
       {
         full_name: lead.fullName,
         phone: lead.phone,
+        email: lead.email || null,
         business_name: lead.businessName,
         delivery_state: lead.deliveryState || 'Lagos State',
         business_address: lead.businessAddress || '',
+        residential_address: lead.residentialAddress || '',
         service_type: lead.serviceType,
         loan_amount_requested: lead.loanAmountRequested || null,
         bvn_provided: lead.bvnProvided ?? true,
@@ -94,14 +98,14 @@ export async function submitLeadToSupabase(lead: {
         notes: lead.notes || '',
         status: 'New',
       },
-    ]).select();
+    ]);
 
     if (error) {
       console.warn('Supabase lead insert response:', error);
       return { success: false, error };
     }
 
-    return { success: true, data };
+    return { success: true };
   } catch (err) {
     console.error('Failed to submit lead to Supabase:', err);
     return { success: false, error: err };

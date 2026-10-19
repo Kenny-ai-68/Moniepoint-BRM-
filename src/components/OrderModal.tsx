@@ -40,12 +40,14 @@ export const OrderModal: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [deliveryState, setDeliveryState] = useState<'Lagos State' | 'Ogun State' | 'Other Location'>('Lagos State');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   // Sync initial state when modal opens
   useEffect(() => {
     if (isOrderModalOpen) {
       setIsSubmitted(false);
+      setIsSubmitting(false);
       setErrorMsg('');
       if (orderModalType === 'pos_modal') {
         setServiceType('POS Terminal');
@@ -77,6 +79,7 @@ export const OrderModal: React.FC = () => {
       `*Business Name:* ${businessName || 'Not provided'}\n` +
       `*Delivery State:* ${deliveryState}\n` +
       (businessAddress ? `*Delivery Address / Shop:* ${businessAddress}\n` : '') +
+      (residentialAddress ? `*Residential Address:* ${residentialAddress}\n` : '') +
       (serviceType === 'Business Loan' ? `*Loan Requested:* ${loanAmount}\n` : '') +
       (serviceType === 'POS Terminal' ? `*Fee:* ₦25,000 (Delivery <24h in Ogun & Lagos)\n` : '') +
       `*Documents Ready:* NIN: ${hasNIN ? 'Yes' : 'Pending'}, BVN: ${hasBVN ? 'Yes' : 'Pending'}\n` +
@@ -85,14 +88,17 @@ export const OrderModal: React.FC = () => {
       `\nHello Kenny Olu, please confirm my order / inquiry.`;
   };
 
-  const handleWhatsAppSubmit = (e: React.FormEvent) => {
+  const handleWhatsAppSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone || !fullName) {
       setErrorMsg('Please enter your full name and phone number to proceed.');
       return;
     }
 
-    // Save lead to local database
+    setIsSubmitting(true);
+    setErrorMsg('');
+
+    // Save lead to local context
     addLead({
       fullName,
       phone,
@@ -107,12 +113,13 @@ export const OrderModal: React.FC = () => {
     });
 
     // Also sync to Supabase if configured
-    submitLeadToSupabase({
+    await submitLeadToSupabase({
       fullName,
       phone,
       businessName: businessName || 'Not specified',
       deliveryState,
       businessAddress,
+      residentialAddress,
       serviceType,
       loanAmountRequested: serviceType === 'Business Loan' ? loanAmount : undefined,
       bvnProvided: hasBVN,
@@ -122,15 +129,19 @@ export const OrderModal: React.FC = () => {
 
     const url = generateWhatsAppUrl(buildSummaryText());
     window.open(url, '_blank');
+    setIsSubmitting(false);
     setIsSubmitted(true);
   };
 
-  const handleDirectSubmit = (e: React.FormEvent) => {
+  const handleDirectSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone || !fullName) {
       setErrorMsg('Please enter your full name and phone number to proceed.');
       return;
     }
+
+    setIsSubmitting(true);
+    setErrorMsg('');
 
     addLead({
       fullName,
@@ -145,13 +156,14 @@ export const OrderModal: React.FC = () => {
       notes,
     });
 
-    // Also sync to Supabase if configured
-    submitLeadToSupabase({
+    // Also sync directly to Supabase
+    await submitLeadToSupabase({
       fullName,
       phone,
       businessName: businessName || 'Not specified',
       deliveryState,
       businessAddress,
+      residentialAddress,
       serviceType,
       loanAmountRequested: serviceType === 'Business Loan' ? loanAmount : undefined,
       bvnProvided: hasBVN,
@@ -159,6 +171,7 @@ export const OrderModal: React.FC = () => {
       notes,
     });
 
+    setIsSubmitting(false);
     setIsSubmitted(true);
   };
 
@@ -207,10 +220,10 @@ export const OrderModal: React.FC = () => {
                 <CheckCircle className="w-10 h-10" />
               </div>
               <h4 className="text-2xl font-black text-slate-900">
-                Application Received Successfully!
+                Application Saved & Received Successfully!
               </h4>
               <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                Thank you, <strong>{fullName}</strong>. Your request for <strong>{serviceType}</strong> has been forwarded to Kenny Olu. We will contact you at <strong>{phone}</strong> to confirm your details.
+                Thank you, <strong>{fullName}</strong>. Your request for <strong>{serviceType}</strong> has been securely recorded and forwarded to Kenny Olu Digital. We will contact you at <strong>{phone}</strong> to confirm your order and delivery.
               </p>
 
               <div className="p-4 bg-blue-50 rounded-2xl border border-blue-200 text-xs text-blue-900 text-left space-y-1.5 max-w-md mx-auto">
@@ -437,18 +450,20 @@ export const OrderModal: React.FC = () => {
               <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={handleWhatsAppSubmit}
-                  className="flex-1 py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-95"
+                  className="flex-1 py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <MessageCircle className="w-4 h-4 fill-current" />
-                  <span>Submit & Chat on WhatsApp</span>
+                  <span>{isSubmitting ? 'Saving to Database...' : 'Submit & Chat on WhatsApp'}</span>
                 </button>
 
                 <button
                   type="submit"
-                  className="py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-95"
+                  disabled={isSubmitting}
+                  className="py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <span>Submit Order Online</span>
+                  <span>{isSubmitting ? 'Saving...' : 'Submit Order Online'}</span>
                 </button>
               </div>
 
