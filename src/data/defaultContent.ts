@@ -20,7 +20,7 @@ export const defaultSiteContent: SiteContent = {
   heroSubheadline: 'Get your Moniepoint POS terminal delivered within 24 hours for only ₦25,000 across Ogun and Lagos State. Unlock business loans from ₦500k to millions, automate daily bookkeeping with Moniebook, and earn high-yield savings.',
   heroDescription: 'Partner with Kenny Olu Digital (located at 3 Matogun road Adiyan gasline Agbado) for reliable payment processing, uninterrupted dual-network 4G connection, zero settlement delays, and dedicated 1-on-1 account management for your business.',
   heroImageUrl: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1200&q=80',
-  promoVideoUrl: 'https://www.youtube.com/watch?v=LWMXALG3H5I',
+  promoVideoUrl: 'https://youtube.com/shorts/bpcLcBhqVbU?si=SpM5Df9HJNptSf02',
   posPrice: '₦25,000',
   deliveryTimeframe: 'Under 24 hours',
   loanAmountRange: '₦500k - Millions',
@@ -90,10 +90,10 @@ export const defaultSiteContent: SiteContent = {
   ],
 
   // Media Showcase slot (Configurable by admin)
-  audienceMediaUrl: 'https://www.youtube.com/watch?v=LWMXALG3H5I',
+  audienceMediaUrl: 'https://youtube.com/shorts/bpcLcBhqVbU?si=SpM5Df9HJNptSf02',
   audienceMediaType: 'video',
-  audienceMediaTitle: 'Official Moniepoint POS Video',
-  audienceMediaCaption: 'Official Terminal Deployment & Demonstration',
+  audienceMediaTitle: 'Moniepoint Official Showcase',
+  audienceMediaCaption: 'Official Moniepoint Merchant Solutions & Fast POS Processing',
 
   // Dedicated image spaces for Loan and Savings
   loanImageUrl: '/images/loan.jpg',

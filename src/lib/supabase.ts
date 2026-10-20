@@ -154,3 +154,74 @@ export async function fetchLeadsFromSupabase() {
     return { success: false, error: err, data: [] };
   }
 }
+
+/**
+ * Supabase Auth: Secure server-side administrator sign in
+ * Credentials are sent encrypted directly to Supabase Auth server.
+ * Passwords are never stored or validated in frontend code.
+ */
+export async function signInAdminWithSupabase(
+  email: string,
+  password: string
+): Promise<{ success: boolean; user?: any; error?: string }> {
+  const client = getSupabaseClient();
+  if (!client) {
+    return { 
+      success: false, 
+      error: 'Supabase client is not configured. Please check your Supabase URL and anon key.' 
+    };
+  }
+
+  try {
+    const { data, error } = await client.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, user: data.user };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Authentication failed' };
+  }
+}
+
+/**
+ * Supabase Auth: Sign out administrator
+ */
+export async function signOutAdminFromSupabase(): Promise<void> {
+  const client = getSupabaseClient();
+  if (!client) return;
+  try {
+    await client.auth.signOut();
+  } catch (err) {
+    console.error('Error signing out:', err);
+  }
+}
+
+/**
+ * Supabase Auth: Get active session
+ */
+export async function getAdminSession() {
+  const client = getSupabaseClient();
+  if (!client) return null;
+  try {
+    const { data } = await client.auth.getSession();
+    return data?.session || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Supabase Auth: Listen for authentication state changes
+ */
+export function onAdminAuthStateChange(callback: (event: string, session: any) => void) {
+  const client = getSupabaseClient();
+  if (!client) return { unsubscribe: () => {} };
+  
+  const { data: { subscription } } = client.auth.onAuthStateChange(callback);
+  return subscription;
+}

@@ -1,5 +1,7 @@
 import React from 'react';
 import { useContent } from '../context/ContentContext';
+import defaultLoanImg from '../assets/images/loan.jpg';
+import defaultSavingsImg from '../assets/images/savings.jpg';
 import { 
   CreditCard, 
   Coins, 
@@ -68,9 +70,9 @@ export const ProductsSection: React.FC = () => {
 
             // Product-specific image or dedicated loan/savings image
             const productImage = isLoan 
-              ? (content.loanImageUrl || product.imageUrl || '/images/loan.jpg') 
+              ? (content.loanImageUrl || defaultLoanImg || '/images/loan.jpg') 
               : isSavings 
-              ? (content.savingsImageUrl || product.imageUrl || '/images/savings.jpg') 
+              ? (content.savingsImageUrl || defaultSavingsImg || '/images/savings.jpg') 
               : product.imageUrl;
 
             return (
@@ -129,6 +131,12 @@ export const ProductsSection: React.FC = () => {
                           src={productImage}
                           alt="Moniepoint Business Loan"
                           className="w-full h-48 sm:h-52 object-cover hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (target.src !== defaultLoanImg) {
+                              target.src = defaultLoanImg;
+                            }
+                          }}
                         />
                       </div>
                     ) : (
@@ -150,6 +158,12 @@ export const ProductsSection: React.FC = () => {
                           src={productImage}
                           alt="Moniepoint Business Savings"
                           className="w-full h-48 sm:h-52 object-cover hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (target.src !== defaultSavingsImg) {
+                              target.src = defaultSavingsImg;
+                            }
+                          }}
                         />
                       </div>
                     ) : (

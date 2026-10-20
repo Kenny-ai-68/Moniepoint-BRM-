@@ -179,32 +179,37 @@ export const AudienceSection: React.FC = () => {
               )}
             </div>
           ) : (
-            // Empty / Ready State: Clean User Media & Video Space (No unrequested video)
-            <div className="relative rounded-2xl overflow-hidden border-2 border-dashed border-slate-300 bg-gradient-to-br from-slate-50 via-blue-50/20 to-slate-100 p-7 flex flex-col justify-between min-h-[360px] text-center">
+            // Empty / Ready State: Clean User Media & Video Space (Space ready for user's official video link)
+            <div className="relative rounded-2xl overflow-hidden border-2 border-dashed border-blue-300 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 p-6 sm:p-7 flex flex-col justify-between min-h-[360px] text-center">
               <div className="my-auto space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-100/80 text-blue-600 flex items-center justify-center shadow-inner">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-inner relative group">
                   <Video className="w-8 h-8" />
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-blue-500 rounded-full border-2 border-white animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-1">
-                    Custom Solutions & Terminal Deployment
+                  <span className="inline-block text-[11px] font-bold tracking-wider uppercase text-blue-700 bg-blue-100 px-3 py-1 rounded-full mb-2">
+                    Official Video Showcase Slot
+                  </span>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-1.5">
+                    Ready For Your YouTube Video
                   </h3>
-                  <p className="text-xs text-slate-600 max-w-xs mx-auto leading-relaxed">
-                    Empowering enterprises across Ogun and Lagos State with high-speed Moniepoint terminals, instant settlements, and 1-on-1 account management.
+                  <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
+                    This prime showcase space is reserved for your official video. Please provide your YouTube video link, and it will stream in high definition across all mobile phones and computers.
                   </p>
                 </div>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs">
                   <Building2 className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Accredited BRM Service Partner</span>
+                  <span>Accredited Moniepoint BRM Partner</span>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-200/60 mt-auto">
+              <div className="pt-4 border-t border-slate-200/80 mt-auto flex flex-col sm:flex-row gap-2 justify-center">
                 <button
+                  type="button"
                   onClick={() => openOrderModal('pos_modal', { businessName: 'General Merchant Inquiry' })}
-                  className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-colors cursor-pointer"
+                  className="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-colors cursor-pointer"
                 >
-                  Schedule Consultation With Kenny Olu
+                  Schedule Consultation
                 </button>
               </div>
             </div>

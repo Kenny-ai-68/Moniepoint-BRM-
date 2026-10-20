@@ -80,7 +80,8 @@ export const AdminDashboard: React.FC = () => {
     clearAllLeads,
     setAllLeads,
     logoutAdmin,
-    setIsAdminView
+    setIsAdminView,
+    adminUserEmail
   } = useContent();
 
   const [activeTab, setActiveTab] = useState<
@@ -450,7 +451,7 @@ export const AdminDashboard: React.FC = () => {
                 {content.businessName} • CMS Admin
               </div>
               <div className="text-[11px] text-blue-400 font-medium">
-                BRM Management Suite (Password: Kenny123)
+                BRM Management Suite • Authorized Session {adminUserEmail ? `(${adminUserEmail})` : ''}
               </div>
             </div>
           </div>
@@ -2183,12 +2184,12 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Authentication Details notice */}
-            <div className="p-4 bg-slate-100 rounded-2xl border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
+            <div className="p-4 bg-slate-100 rounded-2xl border border-slate-200 text-xs text-slate-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <strong>Admin Security Status:</strong> Password authenticated (Session active).
+                <strong>Admin Security Status:</strong> Verified Authenticated Administrator (Session active).
               </div>
-              <span className="font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-slate-800">
-                Key: Kenny123
+              <span className="font-mono bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-slate-800 text-[11px]">
+                Account: {adminUserEmail || content.email || 'Authorized Admin'}
               </span>
             </div>
           </div>
