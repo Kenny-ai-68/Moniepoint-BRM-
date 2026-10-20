@@ -20,7 +20,7 @@ export const defaultSiteContent: SiteContent = {
   heroSubheadline: 'Get your Moniepoint POS terminal delivered within 24 hours for only ₦25,000 across Ogun and Lagos State. Unlock business loans from ₦500k to millions, automate daily bookkeeping with Moniebook, and earn high-yield savings.',
   heroDescription: 'Partner with Kenny Olu Digital (located at 3 Matogun road Adiyan gasline Agbado) for reliable payment processing, uninterrupted dual-network 4G connection, zero settlement delays, and dedicated 1-on-1 account management for your business.',
   heroImageUrl: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1200&q=80',
-  promoVideoUrl: '',
+  promoVideoUrl: 'https://www.youtube.com/watch?v=LWMXALG3H5I',
   posPrice: '₦25,000',
   deliveryTimeframe: 'Under 24 hours',
   loanAmountRange: '₦500k - Millions',
@@ -90,14 +90,14 @@ export const defaultSiteContent: SiteContent = {
   ],
 
   // Media Showcase slot (Configurable by admin)
-  audienceMediaUrl: '',
+  audienceMediaUrl: 'https://www.youtube.com/watch?v=LWMXALG3H5I',
   audienceMediaType: 'video',
-  audienceMediaTitle: '',
-  audienceMediaCaption: '',
+  audienceMediaTitle: 'Official Moniepoint POS Video',
+  audienceMediaCaption: 'Official Terminal Deployment & Demonstration',
 
   // Dedicated image spaces for Loan and Savings
-  loanImageUrl: '',
-  savingsImageUrl: '',
+  loanImageUrl: '/images/loan.jpg',
+  savingsImageUrl: '/images/savings.jpg',
 
   // Products Section
   products: [
@@ -130,6 +130,7 @@ export const defaultSiteContent: SiteContent = {
       highlight: 'Rapid disbursement upon assessment',
       iconName: 'Coins',
       badge: 'High Demand',
+      imageUrl: '/images/loan.jpg',
       features: [
         'Loan amounts from ₦500,000 up to tens of millions',
         'No collateral lockup required for eligible active merchants',
@@ -170,6 +171,7 @@ export const defaultSiteContent: SiteContent = {
       highlight: 'Daily Interest Payouts',
       iconName: 'PiggyBank',
       badge: 'High Yield',
+      imageUrl: '/images/savings.jpg',
       features: [
         'Daily interest calculations credited directly to your balance',
         'Flexible emergency savings with instant access when needed',

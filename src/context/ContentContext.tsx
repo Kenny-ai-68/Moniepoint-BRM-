@@ -73,7 +73,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return { ...defaultSiteContent, ...parsed };
+        return {
+          ...defaultSiteContent,
+          ...parsed,
+          loanImageUrl: parsed.loanImageUrl?.trim() || defaultSiteContent.loanImageUrl,
+          savingsImageUrl: parsed.savingsImageUrl?.trim() || defaultSiteContent.savingsImageUrl,
+          promoVideoUrl: parsed.promoVideoUrl?.trim() || defaultSiteContent.promoVideoUrl,
+          audienceMediaUrl: parsed.audienceMediaUrl?.trim() || defaultSiteContent.audienceMediaUrl,
+        };
       }
     } catch (e) {
       console.warn('Failed to parse saved site content, using defaults', e);

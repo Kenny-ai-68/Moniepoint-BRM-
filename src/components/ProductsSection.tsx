@@ -68,9 +68,9 @@ export const ProductsSection: React.FC = () => {
 
             // Product-specific image or dedicated loan/savings image
             const productImage = isLoan 
-              ? (content.loanImageUrl || product.imageUrl) 
+              ? (content.loanImageUrl || product.imageUrl || '/images/loan.jpg') 
               : isSavings 
-              ? (content.savingsImageUrl || product.imageUrl) 
+              ? (content.savingsImageUrl || product.imageUrl || '/images/savings.jpg') 
               : product.imageUrl;
 
             return (

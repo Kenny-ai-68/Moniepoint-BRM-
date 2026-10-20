@@ -29,17 +29,13 @@ export const AudienceSection: React.FC = () => {
   const getEmbedUrl = (url: string) => {
     if (!url) return '';
     try {
-      if (url.includes('youtube.com/watch?v=')) {
-        const videoId = url.split('v=')[1]?.split('&')[0];
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/i);
+      if (ytMatch && ytMatch[1]) {
+        return `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&playsinline=1&rel=0&modestbranding=1`;
       }
-      if (url.includes('youtu.be/')) {
-        const videoId = url.split('youtu.be/')[1]?.split('?')[0];
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-      }
-      if (url.includes('vimeo.com/')) {
-        const videoId = url.split('vimeo.com/')[1]?.split('?')[0];
-        return `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+      const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/i);
+      if (vimeoMatch && vimeoMatch[1]) {
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&playsinline=1`;
       }
     } catch {
       return url;
@@ -135,25 +131,28 @@ export const AudienceSection: React.FC = () => {
                 </div>
               ) : isPlayingVideo ? (
                 // Video Playing (User Embed or Direct)
-                activeMediaUrl.startsWith('data:video') ? (
-                  <video
-                    src={activeMediaUrl}
-                    controls
-                    autoPlay
-                    className="w-full h-full min-h-[360px] object-cover"
-                  />
-                ) : (
-                  <iframe
-                    src={getEmbedUrl(activeMediaUrl)}
-                    title={mediaTitle}
-                    className="w-full h-full min-h-[360px] border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                )
+                <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] aspect-video flex items-center justify-center bg-black">
+                  {activeMediaUrl.startsWith('data:video') ? (
+                    <video
+                      src={activeMediaUrl}
+                      controls
+                      autoPlay
+                      playsInline
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <iframe
+                      src={getEmbedUrl(activeMediaUrl)}
+                      title={mediaTitle}
+                      className="w-full h-full border-0 absolute inset-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  )}
+                </div>
               ) : (
                 // Video Poster Ready to Play
-                <div className="relative w-full h-full min-h-[360px] flex items-center justify-center">
+                <div className="relative w-full h-full min-h-[300px] sm:min-h-[360px] flex items-center justify-center">
                   <img
                     src={content.heroImageUrl || "https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1000&q=80"}
                     alt={mediaTitle}
